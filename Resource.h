@@ -11,4 +11,5 @@ typedef void (^block_t)();
 - (NSURL *)resolvedURL;
 - (Resource *)resourceWithParameterSubstitution:(NSString *(^)(NSString *parameterName))substitution;
 - (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure;
+- (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure policy:(NSURLRequestCachePolicy)policy;
 @end

@@ -10,7 +10,7 @@
 
 @implementation HTTPRequest
 
-- (id)initWithResource:(Resource *)resource
+- (id)initWithResource:(Resource *)resource policy:(NSURLRequestCachePolicy)policy;
 {
   if ((self = [super init]))
   {
@@ -18,7 +18,7 @@
     [self setData:[NSMutableData data]];
     
     NSURL *url = [resource resolvedURL];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:policy timeoutInterval:0];
     NSURLRequest *filtered = [[HTTPFilters default] filteredRequest:request];
     [self setConnection:[[NSURLConnection alloc] initWithRequest:filtered delegate:self startImmediately:NO]];
   }

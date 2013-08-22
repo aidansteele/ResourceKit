@@ -4,7 +4,7 @@
 @interface HTTPRequest : NSObject
 @property (nonatomic, copy) void (^success)(NSData *data, NSHTTPURLResponse *response);
 @property (nonatomic, copy) void (^failure)(NSError *error);
-- (id)initWithResource:(Resource *)resource;
+- (id)initWithResource:(Resource *)resource policy:(NSURLRequestCachePolicy)policy;
 - (void)start;
 - (void)cancel;
 @end

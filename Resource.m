@@ -65,9 +65,9 @@
   return [[Resource alloc] initWithHref:new_href type:[self type] baseURL:[self baseURL]];
 }
 
-- (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure;
+- (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure policy:(NSURLRequestCachePolicy)policy;
 {
-  HTTPRequest *request = [[HTTPRequest alloc] initWithResource:self];
+  HTTPRequest *request = [[HTTPRequest alloc] initWithResource:self policy:policy];
   [request setSuccess:^(NSData *data, NSHTTPURLResponse *response) {
     NSError *error = nil;
     NSDictionary *document = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
@@ -95,6 +95,11 @@
   return ^{
     [request cancel];
   };
+}
+
+- (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure;
+{
+  return [self loadWithSuccess:success failure:failure policy:NSURLRequestUseProtocolCachePolicy];
 }
 
 @end
