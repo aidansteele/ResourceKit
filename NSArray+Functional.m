@@ -37,7 +37,7 @@
       array = [NSMutableArray array];
       [dictionary setObject:array forKey:key];
     }
-    [array addObject:obj];
+    if (obj) [array addObject:obj];
   }];
 
   return dictionary;
