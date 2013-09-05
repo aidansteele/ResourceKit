@@ -16,4 +16,5 @@
 + (void)registerClass:(Class)class forType:(NSString *)type;
 - (id)initWithBaseURL:(NSURL *)baseURL;
 - (id)entityWithDocument:(NSDictionary *)document error:(NSError **)error;
+- (NSURL *)baseURL;
 @end
