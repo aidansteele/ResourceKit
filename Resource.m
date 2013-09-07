@@ -59,7 +59,9 @@
   NSRegularExpression *regexp = [NSRegularExpression regularExpressionWithPattern:@"\\{([^{]+)\\}" options:0 error:&error];
   NSString *new_href = [[self href] gsub:regexp withMatchTransformation:^NSString *(NSString *element) {
     NSString *parameter_name = [element substringWithRange:NSMakeRange(1, [element length] - 2)];
-    return substitution(parameter_name);
+    NSString *raw = substitution(parameter_name);
+    NSString *escaped = [raw stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return escaped;
   }];
 
   return [[Resource alloc] initWithHref:new_href type:[self type] baseURL:[self baseURL]];
