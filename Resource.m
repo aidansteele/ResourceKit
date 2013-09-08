@@ -93,7 +93,7 @@
   }];
 
   [request setFailure:failure];
-  [request setFastTrackCache:YES];
+  [request setFastTrackCache:policy != NSURLRequestReloadIgnoringLocalCacheData];
   [request start];
   
   return ^{
