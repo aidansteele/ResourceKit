@@ -52,7 +52,7 @@
   __block NSURLResponse *filtered = response;
 
   [[[self filters] pick:^BOOL(id item, NSUInteger index) {
-    return [item respondsToSelector:@selector(filteredRequest:)];
+    return [item respondsToSelector:@selector(filteredResponse:)];
   }] enumerateObjectsUsingBlock:^(id<HTTPFilter> obj, NSUInteger idx, BOOL *stop) {
     filtered = [obj filteredResponse:filtered];
   }];

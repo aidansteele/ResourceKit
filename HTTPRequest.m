@@ -31,7 +31,6 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
 
 - (void)start
 {
-
   NSCachedURLResponse *cached = [[NSURLCache sharedURLCache] cachedResponseForRequest:[[self connection] currentRequest]];
   NSHTTPURLResponse *response = (NSHTTPURLResponse *)[cached response];
   NSData *data = [cached data];
