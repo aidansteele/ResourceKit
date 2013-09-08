@@ -58,6 +58,19 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
   [[self data] appendData:data];
 }
 
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response;
+{
+  if (response) // if we had a redirect
+  {
+    __unused NSURLResponse *filtered_resp = [[HTTPFilters default] filteredResponse:response];
+    return [[HTTPFilters default] filteredRequest:request];
+  }
+  else
+  {
+    return request;
+  }
+}
+
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
   NSURLResponse *filtered = [[HTTPFilters default] filteredResponse:response];
