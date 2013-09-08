@@ -91,7 +91,9 @@
       failure(error);
     }
   }];
+
   [request setFailure:failure];
+  [request setFastTrackCache:YES];
   [request start];
   
   return ^{
