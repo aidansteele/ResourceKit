@@ -29,6 +29,18 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
   return self;
 }
 
+- (void)setPOSTBody:(NSData *)body contentType:(NSString *)contentType;
+{
+  NSURL *url = [[self resource] resolvedURL];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
+  [request setHTTPMethod:@"POST"];
+  [request setHTTPBody:body];
+
+  NSURLRequest *filtered = [[HTTPFilters default] filteredRequest:request];
+  [self setConnection:[[NSURLConnection alloc] initWithRequest:filtered delegate:self startImmediately:NO]];
+}
+
 - (void)start
 {
   NSCachedURLResponse *cached = [[NSURLCache sharedURLCache] cachedResponseForRequest:[[self connection] currentRequest]];

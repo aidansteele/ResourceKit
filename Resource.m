@@ -2,6 +2,7 @@
 #import "HTTPRequest.h"
 #import "EntityFactory.h"
 #import "NSString+Gsub.h"
+#import "NSDictionary+Functional.h"
 
 @interface Resource ()
 @property (nonatomic, copy) NSString *href;
@@ -67,10 +68,9 @@
   return [[Resource alloc] initWithHref:new_href type:[self type] baseURL:[self baseURL]];
 }
 
-- (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure policy:(NSURLRequestCachePolicy)policy;
+- (void (^)(NSData *, NSHTTPURLResponse *))requestHandlerWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure;
 {
-  HTTPRequest *request = [[HTTPRequest alloc] initWithResource:self policy:policy];
-  [request setSuccess:^(NSData *data, NSHTTPURLResponse *response) {
+  return ^(NSData *data, NSHTTPURLResponse *response) {
     NSError *error = nil;
     NSDictionary *document = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
     if (document)
@@ -90,9 +90,14 @@
     {
       failure(error);
     }
-  }];
+  };
+}
 
+- (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure policy:(NSURLRequestCachePolicy)policy;
+{
+  HTTPRequest *request = [[HTTPRequest alloc] initWithResource:self policy:policy];
   [request setFailure:failure];
+  [request setSuccess:[self requestHandlerWithSuccess:success failure:failure]];
   [request setFastTrackCache:policy != NSURLRequestReloadIgnoringLocalCacheData];
   [request start];
   
@@ -104,6 +109,44 @@
 - (block_t)loadWithSuccess:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure;
 {
   return [self loadWithSuccess:success failure:failure policy:NSURLRequestUseProtocolCachePolicy];
+}
+
+- (block_t)post:(NSDictionary *)dictionary format:(ResourcePOSTFormat)format success:(void (^)(id loadedObject))success failure:(void (^)(NSError *error))failure;
+{
+  NSData *data = nil;
+  NSString *content_type = nil;
+
+  switch (format)
+  {
+    default:
+    case ResourcePOSTFormatFormURLEncoded:
+    {
+      content_type = @"application/x-www-form-urlencoded";
+      NSArray *pairs = [dictionary map:^id(id key, id value) {
+        NSString *enc_value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        return [NSString stringWithFormat:@"%@=%@", key, enc_value];
+      }];
+      NSString *query = [pairs componentsJoinedByString:@"&"];
+      data = [query dataUsingEncoding:NSUTF8StringEncoding];
+      break;
+    }
+    case ResourcePOSTFormatJSON:
+    {
+      content_type = @"application/json";
+      data = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:nil];
+      break;
+    }
+  }
+
+  HTTPRequest *request = [[HTTPRequest alloc] initWithResource:self policy:NSURLRequestUseProtocolCachePolicy];
+  [request setSuccess:[self requestHandlerWithSuccess:success failure:failure]];
+  [request setPOSTBody:data contentType:content_type];
+  [request setFailure:failure];
+  [request start];
+
+  return ^{
+    [request cancel];
+  };
 }
 
 @end
