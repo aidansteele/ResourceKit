@@ -77,16 +77,16 @@
     {
       EntityFactory *factory = [[EntityFactory alloc] initWithBaseURL:[response URL]];
       id loaded_object = [factory entityWithDocument:document error:&error];
-      if (loaded_object)
+      if (loaded_object && success)
       {
         success(loaded_object);
       }
-      else
+      else if (failure)
       {
         failure(error);
       }
     }
-    else
+    else if (failure)
     {
       failure(error);
     }
