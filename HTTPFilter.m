@@ -60,5 +60,17 @@
   return filtered;
 }
 
+- (NSData *)filteredData:(NSData *)data response:(NSURLResponse *)response;
+{
+  __block NSData *filtered = data;
+
+  [[[self filters] pick:^BOOL(id item, NSUInteger index) {
+    return [item respondsToSelector:@selector(filteredData:response:)];
+  }] enumerateObjectsUsingBlock:^(id<HTTPFilter> obj, NSUInteger idx, BOOL *stop) {
+    filtered = [obj filteredData:filtered response:response];
+  }];
+
+  return filtered;
+}
 
 @end

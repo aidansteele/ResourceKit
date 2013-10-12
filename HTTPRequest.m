@@ -52,7 +52,8 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
 
   if ([self success] && [self fastTrackCache] && response && data && fresh)
   {
-    [self success](data, response);
+    NSData *filtered_data = [[HTTPFilters default] filteredData:data response:response];
+    [self success](filtered_data, response);
   }
   else
   {
@@ -117,7 +118,8 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-  if ([self success]) [self success]([[self data] copy], [self response]);
+  NSData *data = [[HTTPFilters default] filteredData:[self data] response:[self response]];
+  if ([self success]) [self success](data, [self response]);
 }
 
 @end

@@ -4,6 +4,7 @@
 @optional 
 - (NSURLRequest *)filteredRequest:(NSURLRequest *)request;
 - (NSURLResponse *)filteredResponse:(NSURLResponse *)response;
+- (NSData *)filteredData:(NSData *)data response:(NSURLResponse *)response;
 @end
 
 @interface HTTPFilters : NSObject <HTTPFilter>
