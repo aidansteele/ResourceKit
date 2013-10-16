@@ -9,6 +9,7 @@ extern NSString *HTTPRequestErrorDomain;
 @property (nonatomic, assign) BOOL fastTrackCache;
 - (id)initWithResource:(Resource *)resource policy:(NSURLRequestCachePolicy)policy;
 - (void)setPOSTBody:(NSData *)body contentType:(NSString *)contentType;
+- (NSURLRequest *)request;
 - (void)start;
 - (void)cancel;
 @end

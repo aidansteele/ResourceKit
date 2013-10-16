@@ -5,6 +5,7 @@
 @interface HTTPRequest () <NSURLConnectionDataDelegate>
 @property (nonatomic, copy) Resource *resource;
 @property (nonatomic, strong) NSMutableData *data;
+@property (nonatomic, strong) NSURLRequest *request;
 @property (nonatomic, strong) NSURLConnection *connection;
 @property (nonatomic, strong) NSHTTPURLResponse *response;
 @end
@@ -24,6 +25,8 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
     NSURL *url = [resource resolvedURL];
     NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:policy timeoutInterval:0];
     NSURLRequest *filtered = [[HTTPFilters default] filteredRequest:request];
+    [self setRequest:filtered];
+
     [self setConnection:[[NSURLConnection alloc] initWithRequest:filtered delegate:self startImmediately:NO]];
   }
   
@@ -39,6 +42,8 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
   [request setHTTPBody:body];
 
   NSURLRequest *filtered = [[HTTPFilters default] filteredRequest:request];
+  [self setRequest:filtered];
+  
   [self setConnection:[[NSURLConnection alloc] initWithRequest:filtered delegate:self startImmediately:NO]];
 }
 
