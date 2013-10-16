@@ -9,6 +9,7 @@
 @property (nonatomic, strong) NSHTTPURLResponse *response;
 @end
 
+NSString *HTTPRequestErrorDomain = @"HTTPRequestErrorDomain";
 static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
 
 @implementation HTTPRequest
@@ -118,8 +119,17 @@ static NSString *InternalExpiryTimeKey = @"InternalExpiryTimeKey";
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-  NSData *data = [[HTTPFilters default] filteredData:[self data] response:[self response]];
-  if ([self success]) [self success](data, [self response]);
+  // todo: why are we getting this delegate method called with status code 405?
+  if ([[self response] isKindOfClass:[NSHTTPURLResponse class]] && [[self response] statusCode] / 100 == 4)
+  {
+    NSError *error = [NSError errorWithDomain:HTTPRequestErrorDomain code:[[self response] statusCode] userInfo:@{}];
+    if ([self failure]) [self failure](error);
+  }
+  else if ([self success])
+  {
+    NSData *data = [[HTTPFilters default] filteredData:[self data] response:[self response]];
+    [self success](data, [self response]);
+  }
 }
 
 @end

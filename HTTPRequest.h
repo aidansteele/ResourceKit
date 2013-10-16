@@ -1,6 +1,8 @@
 #import <Foundation/Foundation.h>
 #import "Resource.h"
 
+extern NSString *HTTPRequestErrorDomain;
+
 @interface HTTPRequest : NSObject
 @property (nonatomic, copy) void (^success)(NSData *data, NSHTTPURLResponse *response);
 @property (nonatomic, copy) void (^failure)(NSError *error);
