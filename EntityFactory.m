@@ -48,7 +48,8 @@ static char kEntityFactoryTypeMapKey;
 
 - (NSString *)stringForKey:(NSString *)key;
 {
-  return [[self document] valueForKeyPath:key] ?: @"";
+  NSString *string = [[self document] valueForKeyPath:key];
+  return [string isKindOfClass:[NSString class]] ? string : @"";
 }
 
 - (NSNumber *)numberForKey:(NSString *)key;
