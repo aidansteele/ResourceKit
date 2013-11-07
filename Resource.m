@@ -10,6 +10,10 @@
 @property (nonatomic, copy) NSURL *baseURL;
 @end
 
+@interface NSString (URLEncode)
+- (NSString *)urlEncode;
+@end
+
 @implementation Resource
 
 - (id)initWithDocument:(NSDictionary *)document baseURL:(NSURL *)baseURL
@@ -123,8 +127,7 @@
     {
       content_type = @"application/x-www-form-urlencoded";
       NSArray *pairs = [dictionary map:^id(id key, id value) {
-        NSString *enc_value = [value stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        return [NSString stringWithFormat:@"%@=%@", key, enc_value];
+        return [NSString stringWithFormat:@"%@=%@", key, [value urlEncode]];
       }];
       NSString *query = [pairs componentsJoinedByString:@"&"];
       data = [query dataUsingEncoding:NSUTF8StringEncoding];
@@ -147,6 +150,17 @@
   return ^{
     [request cancel];
   };
+}
+
+@end
+
+@implementation NSString (URLEncode)
+
+- (NSString *)urlEncode;
+{
+  CFStringRef escaped = CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`");
+  CFStringRef string = CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef)self, NULL, escaped, kCFStringEncodingUTF8);
+  return (__bridge NSString *)string;
 }
 
 @end
