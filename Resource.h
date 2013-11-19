@@ -9,7 +9,7 @@ typedef enum
   ResourcePOSTFormatJSON,
 } ResourcePOSTFormat;
 
-@interface Resource : NSObject <NSCopying>
+@interface Resource : NSObject <NSCopying, NSCoding>
 - (id)initWithHref:(NSString *)href type:(NSString *)type baseURL:(NSURL *)baseURL;
 - (id)initWithDocument:(NSDictionary *)document baseURL:(NSURL *)baseURL;
 - (NSString *)href;

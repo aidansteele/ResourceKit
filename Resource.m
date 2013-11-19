@@ -34,6 +34,25 @@
   return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder;
+{
+  [coder encodeObject:[self href] forKey:@"href"];
+  [coder encodeObject:[self type] forKey:@"type"];
+  [coder encodeObject:[self baseURL] forKey:@"baseURL"];
+}
+
+- (id)initWithCoder:(NSCoder *)coder;
+{
+  if ((self = [super init]))
+  {
+    [self setHref:[coder decodeObjectForKey:@"href"]];
+    [self setType:[coder decodeObjectForKey:@"type"]];
+    [self setBaseURL:[coder decodeObjectForKey:@"baseURL"]];
+  }
+
+  return self;
+}
+
 - (id)copyWithZone:(NSZone *)zone
 {
   return self;

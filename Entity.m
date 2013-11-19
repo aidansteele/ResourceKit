@@ -16,6 +16,21 @@
   return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder;
+{
+  [coder encodeObject:[self resource] forKey:@"resource"];
+}
+
+- (id)initWithCoder:(NSCoder *)coder;
+{
+  if ((self = [super init]))
+  {
+    [self setResource:[coder decodeObjectForKey:@"resource"]];
+  }
+
+  return self;
+}
+
 - (BOOL)isEqual:(id)object;
 {
   if (![object isKindOfClass:[Entity class]]) return NO;
