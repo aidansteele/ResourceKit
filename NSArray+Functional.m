@@ -43,5 +43,11 @@
   return dictionary;
 }
 
+- (NSArray *)flatten;
+{
+  NSMutableArray *flat = [NSMutableArray arrayWithCapacity:2*[self count]];
+  for (NSArray *arr in self) [flat addObjectsFromArray:arr];
+  return flat;
+}
 
 @end
