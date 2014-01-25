@@ -1,5 +1,4 @@
 #import "HTTPFilter.h"
-#import "NSArray+Functional.h"
 
 @interface HTTPFilters ()
 @property (nonatomic, strong) NSMutableArray *filters;
@@ -34,43 +33,35 @@
   [[self filters] addObject:filter];
 }
 
+- (id)filter:(id)orig action:(SEL)selector with:(id)arg;
+{
+  id filtered = orig;
+
+  for (id<HTTPFilter> filter in [self filters])
+  {
+    if (![filter respondsToSelector:selector]) continue;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    filtered = [filter performSelector:selector withObject:arg];
+#pragma clang diagnostic pop
+  }
+
+  return filtered;
+}
+
 - (NSURLRequest *)filteredRequest:(NSURLRequest *)request;
 {
-  __block NSURLRequest *filtered = request;
-  
-  [[[self filters] pick:^BOOL(id item, NSUInteger index) {
-    return [item respondsToSelector:@selector(filteredRequest:)];
-  }] enumerateObjectsUsingBlock:^(id<HTTPFilter> obj, NSUInteger idx, BOOL *stop) {
-    filtered = [obj filteredRequest:filtered];
-  }];
-  
-  return filtered;
+  return [self filter:request action:_cmd with:nil];
 }
 
 - (NSURLResponse *)filteredResponse:(NSURLResponse *)response;
 {
-  __block NSURLResponse *filtered = response;
-
-  [[[self filters] pick:^BOOL(id item, NSUInteger index) {
-    return [item respondsToSelector:@selector(filteredResponse:)];
-  }] enumerateObjectsUsingBlock:^(id<HTTPFilter> obj, NSUInteger idx, BOOL *stop) {
-    filtered = [obj filteredResponse:filtered];
-  }];
-
-  return filtered;
+  return [self filter:response action:_cmd with:nil];
 }
 
 - (NSData *)filteredData:(NSData *)data response:(NSURLResponse *)response;
 {
-  __block NSData *filtered = data;
-
-  [[[self filters] pick:^BOOL(id item, NSUInteger index) {
-    return [item respondsToSelector:@selector(filteredData:response:)];
-  }] enumerateObjectsUsingBlock:^(id<HTTPFilter> obj, NSUInteger idx, BOOL *stop) {
-    filtered = [obj filteredData:filtered response:response];
-  }];
-
-  return filtered;
+  return [self filter:data action:_cmd with:data];
 }
 
 @end

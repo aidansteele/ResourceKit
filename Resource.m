@@ -2,7 +2,6 @@
 #import "HTTPRequest.h"
 #import "EntityFactory.h"
 #import "NSString+Gsub.h"
-#import "NSDictionary+Functional.h"
 
 @interface Resource ()
 @property (nonatomic, copy) NSString *href;
@@ -144,10 +143,11 @@
     default:
     case ResourcePOSTFormatFormURLEncoded:
     {
-      content_type = @"application/x-www-form-urlencoded";
-      NSArray *pairs = [dictionary map:^id(id key, id value) {
-        return [NSString stringWithFormat:@"%@=%@", key, [value urlEncode]];
+      NSMutableArray *pairs = [NSMutableArray array];
+      [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+        [pairs addObject:[NSString stringWithFormat:@"%@=%@", key, [value urlEncode]]];
       }];
+      content_type = @"application/x-www-form-urlencoded";
       NSString *query = [pairs componentsJoinedByString:@"&"];
       data = [query dataUsingEncoding:NSUTF8StringEncoding];
       break;

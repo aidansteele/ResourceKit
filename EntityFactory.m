@@ -1,5 +1,4 @@
 #import "EntityFactory.h"
-#import "NSArray+Functional.h"
 #import "Resource.h"
 #import "Entity.h"
 #import <objc/runtime.h>
@@ -65,17 +64,23 @@ static char kEntityFactoryTypeMapKey;
 
 - (NSArray *)arrayForKey:(NSString *)key;
 {
-  return [[[self document] valueForKeyPath:key] map:^id(id item, NSUInteger index) {
+  NSArray *orig = [[self document] valueForKeyPath:key];
+  NSMutableArray *array = [NSMutableArray arrayWithCapacity:[orig count]];
+
+  for (id item in orig)
+  {
     if ([item isKindOfClass:[NSDictionary class]])
     {
       id entity = [self entityWithDocument:item error:nil];
-      return entity ?: item;
+      [array addObject:entity ?: item];
     }
     else
     {
-      return item;
+      [array addObject:item];
     }
-  }];
+  }
+
+  return array;
 }
 
 - (NSDictionary *)dictionaryForKey:(NSString *)key;

@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@protocol HTTPFilter
+@protocol HTTPFilter <NSObject>
 @optional 
 - (NSURLRequest *)filteredRequest:(NSURLRequest *)request;
 - (NSURLResponse *)filteredResponse:(NSURLResponse *)response;
